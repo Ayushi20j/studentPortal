@@ -1,37 +1,22 @@
 version: 0.2
-
 phases:
   install:
     runtime-versions:
+      java: corretto17
       python: 3.11
-
   pre_build:
     commands:
-      - echo "Installing dependencies..."
+      - pip install --upgrade pip
       - pip install -r requirements.txt
-      - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.3.0.1492-linux.zip
-      - unzip ./sonar-scanner-cli-3.3.0.1492-linux.zip
-      - export PATH=$PATH:/sonar-scanner-3.3.0.1492-linux/bin/
+      - apt-get update
+      - apt-get install -y jq
+      - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip
+      - unzip ./sonar-scanner-cli-4.7.0.2747-linux.zip
+      - export PATH=$PATH:./sonar-scanner-4.7.0.2747-linux/bin/
   build:
     commands:
-      - echo "Running unit tests for static analysis..."
-      - python -m unittest discover
-
-  post_build:
-    commands:
-      - echo "Running SonarCloud analysis..."
-      - ./sonar-scanner \
-          -Dsonar.projectKey=studentPortal \
-          -Dsonar.organization=Ayushi20j \
-          -Dsonar.sources=. \
-          -Dsonar.host.url=https://sonarcloud.io \
-          -Dsonar.login=60454b0bdac81fc0650d6a76cd62ccb63b274da1
-
-artifacts:
-  files: '**/*'
-  discard-paths: yes
-
-cache:
-  paths:
-    - '/root/.sonar/cache'
-    - './.scannerwork'
+      - sonar-scanner -Dsonar.login=60454b0bdac81fc0650d6a76cd62ccb63b274da1 -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=studentPortal -Dsonar.organization=Ayushi20j -DgeneratePom=true
+      - sleep 5
+      - curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=studentPortal >result.json
+      - cat result.json
+      - if [ $(jq -r '.projectStatus.status' result.json) = ERROR ] ; then $CODEBUILD_BUILD_SUCCEEDING -eq 0 ;fi
