@@ -15,7 +15,7 @@ phases:
       - export PATH=$PATH:./sonar-scanner-4.7.0.2747-linux/bin/
   build:
     commands:
-      - sonar-scanner -Dsonar.login=60454b0bdac81fc0650d6a76cd62ccb63b274da1 -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=studentPortal -Dsonar.organization=Ayushi20j -DgeneratePom=true
+      - sonar-scanner -Dsonar.login=60454b0bdac81fc0650d6a76cd62ccb63b274da1 -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=studentPortal -Dsonar.organization=ayushi20j -DgeneratePom=true
       - sleep 5
       - curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=studentPortal >result.json
       - cat result.json
