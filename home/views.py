@@ -1,5 +1,4 @@
 from distutils.log import info
-from tkinter import N
 from django.shortcuts import render
 from django.contrib import messages
 from django.contrib.auth.models import User
